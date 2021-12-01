@@ -33,7 +33,7 @@ const ProductItem = (props) => {
         </View>
         <View style={styles.details}>
           <Text style={styles.title}>{props.title}</Text>
-          <Text style={styles.price}>{props.price.toFixed(2)}</Text>
+          <Text style={styles.price}>${props.price.toFixed(2)}</Text>
         </View>
         <View style={styles.buttonContainer}>
           <Button
@@ -83,12 +83,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    marginVertical: 4,
-    fontWeight: 'bold',
+    marginVertical: 2,
+    fontFamily: 'open-sans-bold',
   },
   price: {
     fontSize: 14,
     color: '#888',
+    fontFamily: 'open-sans',
   },
   buttonContainer: {
     flexDirection: 'row',
