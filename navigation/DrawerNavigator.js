@@ -4,6 +4,7 @@ import OrderNavigator from '../navigation/OrderNavigator';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
+import AdminNavigator from './AdminNavigator';
 
 const Drawer = createDrawerNavigator();
 
@@ -40,6 +41,22 @@ function DrawerNavigator() {
             return (
               <Ionicons
                 name={Platform.OS === 'android' ? 'md-list' : 'ios-list'}
+                size={23}
+                color={config.color}
+              />
+            );
+          },
+        }}
+      />
+      <Drawer.Screen
+        name="Admin"
+        component={AdminNavigator}
+        options={{
+          drawerLabel: 'User Products',
+          drawerIcon: (config) => {
+            return (
+              <Ionicons
+                name={Platform.OS === 'android' ? 'md-create' : 'ios-create'}
                 size={23}
                 color={config.color}
               />

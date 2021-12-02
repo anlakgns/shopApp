@@ -1,13 +1,21 @@
 import React from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import { FlatList, Button } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import ProductItem from '../../components/shop/ProductItem';
-import * as cardActions from '../../store/actions/cart';
+import Colors from '../../constants/Colors';
+import * as cartActions from '../../store/actions/cart';
 
 const ProductsOverviewScreen = (props) => {
   const dispatch = useDispatch();
 
   const products = useSelector((state) => state.products.availableProducts);
+  
+  const selectItemHandler = (id, title) => {
+    props.navigation.navigate('productDetail', {
+      productId: id,
+      productTitle: title,
+    });
+  };
 
   return (
     <FlatList
@@ -18,18 +26,25 @@ const ProductsOverviewScreen = (props) => {
           image={itemData.item.imageUrl}
           title={itemData.item.title}
           price={itemData.item.price}
-          navigation={props.navigation}
-          id={itemData.item.id}
-          onViewDetail={() =>
-            props.navigation.navigate('productDetail', {
-              productId: itemData.item.id,
-              productTitle: itemData.item.title,
-            })
-          }
-          onAddToChart={() => {
-            dispatch(cardActions.addToCart(itemData.item))
+          onSelect={() => {
+            selectItemHandler(itemData.item.id, itemData.item.title);
           }}
-        />
+        >
+          <Button
+            color={Colors.primary}
+            title="View Details"
+            onPress={() => {
+              selectItemHandler(itemData.item.id, itemData.item.title);
+            }}
+          />
+          <Button
+            color={Colors.primary}
+            title="To Cart"
+            onPress={() => {
+              dispatch(cartActions.addToCart(itemData.item));
+            }}
+          />
+        </ProductItem>
       )}
     />
   );
@@ -37,4 +52,3 @@ const ProductsOverviewScreen = (props) => {
 
 export default ProductsOverviewScreen;
 
-const styles = StyleSheet.create({});
