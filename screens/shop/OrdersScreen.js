@@ -1,28 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, View, ActivityIndicator } from 'react-native';
+import {
+  View,
+  FlatList,
+  Text,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+
 import OrderItem from '../../components/shop/OrderItem';
-import * as orderActions from '../../store/actions/orders';
+import * as ordersActions from '../../store/actions/orders';
 import Colors from '../../constants/Colors';
 
 const OrdersScreen = (props) => {
-  const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
-  const orders = useSelector((state) => state.orders.orders);
 
+  const orders = useSelector((state) => state.orders.orders);
+  const dispatch = useDispatch();
   useEffect(() => {
-    const loadOrders = async () => {
+    const fetchOrders = async () => {
       setIsLoading(true);
-      await dispatch(orderActions.fetchOrders());
+      await dispatch(ordersActions.fetchOrders());
       setIsLoading(false);
     };
-    loadOrders();
+    fetchOrders();
   }, [dispatch]);
+
+  console.log(orders);
 
   if (isLoading) {
     return (
-      <View>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.primary} />
+      </View>
+    );
+  }
+  if (orders.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No order found, maybe start ordering some products?</Text>
       </View>
     );
   }
@@ -31,17 +47,23 @@ const OrdersScreen = (props) => {
     <FlatList
       data={orders}
       keyExtractor={(item) => item.id}
-      renderItem={(itemData) => {
-        return (
-          <OrderItem
-            amount={itemData.item.totalAmount}
-            date={itemData.item.readableData}
-            items={itemData.item.items}
-          />
-        );
-      }}
+      renderItem={(itemData) => (
+        <OrderItem
+          amount={itemData.item.totalAmount}
+          date={itemData.item.readableDate}
+          items={itemData.item.items}
+        />
+      )}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 export default OrdersScreen;

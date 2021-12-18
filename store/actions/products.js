@@ -5,23 +5,23 @@ export const SET_PRODUCTS = 'SET_PRODUCTS';
 import Product from '../../models/product';
 
 export const fetchProducts = () => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const userId = getState().auth.userId;
     try {
       const response = await fetch(
         'https://shopapp-44638-default-rtdb.firebaseio.com/products.json'
       );
-
       if (!response.ok) {
         throw new Error('Something went wrong.');
       }
 
       let loadedProducts = [];
       const resData = await response.json();
-      for (key in resData) {
+      for (let key in resData) {
         loadedProducts.push(
           new Product(
             key,
-            'u1',
+            userId,
             resData[key].title,
             resData[key].imageUrl,
             resData[key].description,
@@ -29,19 +29,24 @@ export const fetchProducts = () => {
           )
         );
       }
-
-      dispatch({ type: SET_PRODUCTS, products: loadedProducts });
+      dispatch({
+        type: SET_PRODUCTS,
+        products: loadedProducts,
+        userProducts: loadedProducts.filter((item) => item.ownerId === userId),
+      });
     } catch (err) {
-      throw err;
+      console.log(err);
     }
   };
 };
 
 export const deleteProduct = (productId) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+
     try {
       const response = await fetch(
-        `https://shopapp-44638-default-rtdb.firebaseio.com/products/${productId}.json`,
+        `https://shopapp-44638-default-rtdb.firebaseio.com/products/${productId}.json?auth=${token}`,
         {
           method: 'DELETE',
         }
@@ -59,10 +64,13 @@ export const deleteProduct = (productId) => {
 };
 
 export const createProduct = (title, description, imageUrl, price) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const userId = getState().auth.userId;
+
     try {
       const response = await fetch(
-        'https://shopapp-44638-default-rtdb.firebaseio.com/products.json',
+        `https://shopapp-44638-default-rtdb.firebaseio.com/products.json?auth=${token}`,
         {
           method: 'POST',
           headers: {
@@ -73,10 +81,13 @@ export const createProduct = (title, description, imageUrl, price) => {
             description,
             imageUrl,
             price,
+            ownerId: userId,
           }),
         }
       );
-
+      if (!response.ok) {
+        throw new Error('Something went wrong.');
+      }
       const resData = await response.json();
 
       dispatch({
@@ -87,6 +98,7 @@ export const createProduct = (title, description, imageUrl, price) => {
           description,
           imageUrl,
           price,
+          ownerId: userId,
         },
       });
     } catch (err) {
@@ -96,10 +108,11 @@ export const createProduct = (title, description, imageUrl, price) => {
 };
 
 export const updateProduct = (id, title, description, imageUrl) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
     try {
       const response = await fetch(
-        `https://shopapp-44638-default-rtdb.firebaseio.com/products/${id}.json`,
+        `https://shopapp-44638-default-rtdb.firebaseio.com/products/${id}.json?auth=${token}`,
         {
           method: 'PATCH',
           headers: {
@@ -112,12 +125,8 @@ export const updateProduct = (id, title, description, imageUrl) => {
           }),
         }
       );
-
-      if (!response.ok) {
-        throw new Error('Something went wrong.');
-      }
     } catch (err) {
-      throw err
+      throw err;
     }
 
     dispatch({

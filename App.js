@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
-import DrawerNavigator from './navigation/DrawerNavigator';
+import AuthNavigator from './navigation/AuthNavigator';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import 'react-native-gesture-handler';
 
 import productsReducer from './store/reducers/products';
 import cartReducer from './store/reducers/cart';
+import authReducer from './store/reducers/auth';
 import ordersReducer from './store/reducers/orders';
 import ReduxThunk from 'redux-thunk';
 
@@ -18,6 +19,7 @@ const combinedReducer = combineReducers({
   products: productsReducer,
   cart: cartReducer,
   orders: ordersReducer,
+  auth: authReducer,
 });
 
 const store = createStore(
@@ -26,11 +28,12 @@ const store = createStore(
 );
 
 const fetchFonts = () => {
-  Font.loadAsync({
+  return Font.loadAsync({
     'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
-    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
   });
 };
+
 
 export default function App() {
   const [isFontLoaded, setIsFontLoaded] = useState(false);
@@ -48,7 +51,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <DrawerNavigator />
+        <AuthNavigator />
       </NavigationContainer>
     </Provider>
   );

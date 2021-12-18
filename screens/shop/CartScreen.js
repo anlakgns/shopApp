@@ -11,13 +11,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import Colors from '../../constants/Colors';
 import CartItem from '../../components/shop/CartItem';
+import Card from '../../components/UI/Card';
 import * as cartActions from '../../store/actions/cart';
 import * as ordersActions from '../../store/actions/orders';
-import Card from '../../components/UI/Card';
 
 const CartScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [errMessage, setErrMessage] = useState(null);
+
   const cartTotalAmount = useSelector((state) => state.cart.totalAmount);
   const cartItems = useSelector((state) => {
     const transformedCartItems = [];
@@ -37,18 +37,19 @@ const CartScreen = (props) => {
   const dispatch = useDispatch();
 
   const sendOrderHandler = async () => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       await dispatch(ordersActions.addOrder(cartItems, cartTotalAmount));
+      setIsLoading(false);
     } catch (err) {
-      setErrMessage(err.message);
+      console.log(err);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
-    <Card style={styles.screen}>
-      <View style={styles.summary}>
+    <View style={styles.screen}>
+      <Card style={styles.summary}>
         <Text style={styles.summaryText}>
           Total:{' '}
           <Text style={styles.amount}>
@@ -59,29 +60,29 @@ const CartScreen = (props) => {
           <ActivityIndicator size="small" color={Colors.primary} />
         ) : (
           <Button
-            color={Colors.secondary}
+            color={Colors.accent}
             title="Order Now"
             disabled={cartItems.length === 0}
             onPress={sendOrderHandler}
           />
         )}
-      </View>
+      </Card>
       <FlatList
         data={cartItems}
         keyExtractor={(item) => item.productId}
         renderItem={(itemData) => (
           <CartItem
             quantity={itemData.item.quantity}
-            deletable
             title={itemData.item.productTitle}
             amount={itemData.item.sum}
+            deletable
             onRemove={() => {
               dispatch(cartActions.removeFromCart(itemData.item.productId));
             }}
           />
         )}
       />
-    </Card>
+    </View>
   );
 };
 
@@ -93,9 +94,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderRadius: 10,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    marginBottom: 20,
+    padding: 10,
   },
   summaryText: {
     fontFamily: 'open-sans-bold',
