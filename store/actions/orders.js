@@ -40,7 +40,6 @@ export const addOrder = (cartItems, totalAmount) => {
     try {
       const token = getState().auth.token;
       const userId = getState().auth.userId;
-      console.log(userId);
       const date = new Date();
       const response = await fetch(
         `https://shopapp-44638-default-rtdb.firebaseio.com/orders/${userId}.json?auth=${token}`,
@@ -58,7 +57,6 @@ export const addOrder = (cartItems, totalAmount) => {
       );
 
       const resData = await response.json();
-      console.log(resData);
       dispatch({
         type: ADD_ORDER,
         orderData: {

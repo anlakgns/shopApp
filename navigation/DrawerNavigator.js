@@ -1,12 +1,38 @@
 import ShopNavigator from './ShopNavigator';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from '@react-navigation/drawer';
+import { Button } from 'react-native';
 import OrderNavigator from '../navigation/OrderNavigator';
+import { View } from 'react-native';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '../constants/Colors';
 import AdminNavigator from './AdminNavigator';
+import { useDispatch } from 'react-redux';
+import * as authActions from '../store/actions/auth';
 
 const Drawer = createDrawerNavigator();
+
+function CustomDrawerContent(props) {
+  const dispatch = useDispatch();
+  return (
+    <View style={{ flex: 1, paddingTop: 20 }}>
+      <DrawerContentScrollView>
+        <DrawerItemList {...props} />
+        <Button
+          title="Logout"
+          color={Colors.primary}
+          onPress={() => {
+            dispatch(authActions.logout());
+          }}
+        />
+      </DrawerContentScrollView>
+    </View>
+  );
+}
 
 function DrawerNavigator() {
   return (
@@ -15,6 +41,7 @@ function DrawerNavigator() {
         headerShown: false,
         drawerActiveTintColor: Colors.primary,
       }}
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
       <Drawer.Screen
         name="Home"

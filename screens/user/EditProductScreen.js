@@ -107,11 +107,12 @@ const EditProductScreen = (props) => {
           )
         );
       }
+      setIsLoading(false);
       props.navigation.goBack();
     } catch (err) {
+      setIsLoading(false);
       setErrorMessage(err.message);
     }
-    setIsLoading(true);
   }, [formState, prodId, dispatch]);
 
   useLayoutEffect(() => {

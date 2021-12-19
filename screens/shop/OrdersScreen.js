@@ -14,8 +14,8 @@ import Colors from '../../constants/Colors';
 
 const OrdersScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
-
   const orders = useSelector((state) => state.orders.orders);
+  console.log(orders[0]);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchOrders = async () => {
@@ -25,8 +25,6 @@ const OrdersScreen = (props) => {
     };
     fetchOrders();
   }, [dispatch]);
-
-  console.log(orders);
 
   if (isLoading) {
     return (

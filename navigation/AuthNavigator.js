@@ -3,12 +3,32 @@ import { useSelector } from 'react-redux';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthScreen from '../screens/user/AuthScreen';
 import DrawerNavigator from './DrawerNavigator';
+import StartupScreen from '../screens/StartupScreen';
 import Colors from '../constants/Colors';
 
 const Auth = createNativeStackNavigator();
 
 const AuthNavigator = () => {
   const isLogged = useSelector((state) => state.auth.isLogged);
+
+  const renderScreen = () => {
+    switch (isLogged) {
+      case 'checking':
+        return <Auth.Screen name="Startup" component={StartupScreen} />;
+      case false:
+        return (
+          <Auth.Screen
+            name="Login"
+            component={AuthScreen}
+            options={(props) => ({
+              title: 'Authenticate',
+            })}
+          />
+        );
+      case true:
+        return <Auth.Screen name="Main" component={DrawerNavigator} />;
+    }
+  };
 
   return (
     <Auth.Navigator
@@ -17,17 +37,7 @@ const AuthNavigator = () => {
         drawerActiveTintColor: Colors.primary,
       }}
     >
-      {isLogged ? (
-        <Auth.Screen name="Main" component={DrawerNavigator} />
-      ) : (
-        <Auth.Screen
-          name="Login"
-          component={AuthScreen}
-          options={(props) => ({
-            title: 'Authenticate',
-          })}
-        />
-      )}
+      {renderScreen()}
     </Auth.Navigator>
   );
 };
